@@ -14,7 +14,17 @@ ReactSsrPrepass(/* tuple */[
         })
     ]);
 
+var prepass = ReactSsrPrepass(React.createElement(App.make, { }));
+
+prepass.then((function (param) {
+        console.log("Prepass has finished.");
+        return Promise.resolve((function (param) {
+                      return /* () */0;
+                    }));
+      }));
+
 export {
+  prepass ,
   
 }
 /*  Not a pure module */
