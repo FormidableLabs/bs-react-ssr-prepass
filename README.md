@@ -26,3 +26,48 @@ prepass
 ```
 
 You can also pass a custom `visitor` function to `react-ssr-prepass` that will visit each React element in your application and allow you to execute custom data fetching logic based on the `element`.
+
+```reason
+let prepass = ReactSSRPrepass.ssrPrepass(`PrepassNodeVisitor(<App />, element => {
+  /* Inspect the element as you like to call custom data fetching logic. */
+}));
+
+prepass
+|> Js.Promise.then_(() => {
+     Js.log("Prepass has finished. Server render the app!");
+     Js.Promise.resolve(() => ());
+   });
+```
+
+Because ReasonReact doesn't expose any utilities for you to introspect React elements themselves (i.e. examine their `type`, `key`, or `props` directly), the `ReactSSRPrepass` `module` exposes a few useful functions to deal with this. The first is `toElementJS`. This function takes in a `React.element` and returns a `[@bs.deriving abstract]` object representing the raw React element. You can then use the accessors provided by the `[@bs.deriving abstract]` to access those fields. An example will help make this clear:
+
+```reason
+let _ =
+  ReactSSRPrepass.ssrPrepass(
+    `PrepassNodeVisitor((
+      <App />,
+      element => {
+        /* Get the type property off the element. */
+        let elementType =
+          ReactSSRPrepass.toElementJS(element) |> ReactSSRPrepass.type_Get;
+
+        /* Get the type property off an arbitrary Component. */
+        let componentType =
+          Component.make(Js.Obj.empty())
+          |> ReactSSRPrepass.toElementJS
+          |> ReactSSRPrepass.type_Get;
+
+        /* Check if the types match. */
+        if (elementType === componentType) {
+          /* Execute specific data fetching logic for this element. */
+          Js.log("Execute data fetching logic!");
+        };
+
+        /* Return undefined. You can also return a promise from this function. */
+        Js.Nullable.undefined;
+      },
+    )),
+  );
+```
+
+Note that `toElementJS` takes advantage of [BuckleScript's `%identity` trick](https://bucklescript.github.io/docs/en/interop-cheatsheet#identity-external). It's a bandaid solution as long as we can't get fully type-safe access to the internals of `ReasonReact.element`.

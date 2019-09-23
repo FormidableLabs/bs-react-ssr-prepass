@@ -2,6 +2,7 @@
 
 import * as App from "./App.bs.js";
 import * as React from "react";
+import * as Component from "./Component.bs.js";
 import * as ReactSsrPrepass from "react-ssr-prepass";
 
 ReactSsrPrepass(React.createElement(App.make, { }));
@@ -10,6 +11,11 @@ ReactSsrPrepass(/* tuple */[
       React.createElement(App.make, { }),
       (function (element) {
           console.log("Element found: ", element);
+          var elementType = element.type;
+          var componentType = Component.make({ }).type;
+          if (elementType === componentType) {
+            console.log("Execute data fetching logic!");
+          }
           return undefined;
         })
     ]);
