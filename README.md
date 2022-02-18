@@ -71,3 +71,8 @@ let _ =
 ```
 
 Note that `toElementJS` takes advantage of [BuckleScript's `%identity` trick](https://bucklescript.github.io/docs/en/interop-cheatsheet#identity-external). It's a bandaid solution as long as we can't get fully type-safe access to the internals of `ReasonReact.element`.
+
+
+## Maintenance Status
+
+**Archived:** This project is no longer maintained by Formidable. We are no longer responding to issues or pull requests unless they relate to security concerns. We encourage interested developers to fork this project and make it their own!
